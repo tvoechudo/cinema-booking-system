@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <style>
+    .square-free {
+        height: 40px;
+        width: 40px;
+        background-color: white;
+        outline: 2px solid #000;
+        padding: 3px;
+    }
+
+    .square-booked {
+        height: 40px;
+        width: 40px;
+        background-color: grey;
+        outline: 2px solid #000;
+        padding: 3px;
+    }
+
+    .row-schema{
+        width: 40px;
+    }
+    .parent{
+        float:none;
+        width: auto;     
+        margin: 10px auto;
+    }
+
+    .screen{
+        height: 25px;
+        width: 420px;
+        outline: 2px solid #000;
+    }
+
+    .parent>div {
+        float:left;
+        margin-right: 10px;
+    }
+
+    .clear {
+        clear: left; 
+    }
+
+    .hall{
+        width: auto;
+        padding: 2px;
+        margin-left: auto;
+        margin-right: auto;  
+    }
+</style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <a class="navbar-brand" href="/movies">CinemaProject</a>
+              </div>
+              <ul class="nav navbar-nav">
+                <li><a href="/movies">Movies</a></li>
+                <li><a href="/sessions">Showtimes</a></li>
+                <li><a href="/mybooking"> My booking</a></li>
+              </ul>
+            </div>
+        </nav>
+        <div class="page-header">
+            <h1><%=session[0].movie_name %></h1>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <% var hours = session[0].start_date.getHours()%>
+                <% var minutes = session[0].start_date.getMinutes()%>
+                <% if (minutes < 10){%>
+                    <% minutes = "0" + minutes%>
+                <% }%>
+                <%  var time%>
+                <%  if (hours < 12){%>
+                    <% time = hours + ':' + minutes + ' AM'%>
+                <% } else {%>
+                    <% time = (hours-12) + ':' + minutes + ' PM'%>
+                <% }%>
+                <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %>
+                <% var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %>
+                <h4><%= weekdays[session[0].start_date.getDay()]+ " " + session[0].start_date.getDate() + ' ' + months[session[0].start_date.getMonth()] + ' ' + session[0].start_date.getFullYear() %></h4> 
+                <h4><strong><%= time%></strong></h4>
+                <img src='<%= session[0].m_info[0].m_poster %> ' height='260'><br><br>
+                <h4>Ticket price: <strong>$<%=session[0].ticket_price %></strong> </h4>
+            </div>
+            <div class="col-sm-8">
+                <p></p>  
+                <div class="hall">
+                <div class="screen margin"></div>
+                <% for(var i=0; i<session[0].seats.length; i++){ %>
+                    <div class ="parent" id="<%=i%>">
+                    <div class="row-schema"><%= i+1 %> row</div>
+                    <% for(var j=0; j<session[0].seats[i].length; j++){ %>
+                        <% if (session[0].seats[i][j]==0) {%> 
+                            <div class="square-free"> <%=j+1%> </div> 
+                        <% } else { %> 
+                            <div class="square-booked"> <%=j+1%> </div> 
+                        <% } %>
+                    <% } %>
+                </div><div class="clear"></div>
+                <% } %>   
+                </div> 
+                <h5><span id="margin">Click on the available seats you'd like to reserve</span></h5>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-sm-12">
+                <form class="form-horizontal" action="/booking/add" method="POST">                              
+                    <input id="sessionId" name="sessionId" type="hidden" value="<%= session[0].session_id %>">
+                    <div class="form-group text-center">
+                        <label class="control-label col-sm-5" for="email">Email:</label> 
+                        <div class="col-sm-3">
+                            <input class="form-control" type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <input id="price" name ="price" type="hidden" value ="<%=session[0].ticket_price %>">
+
+                    <div class="form-group text-center">
+                        <label class="control-label col-sm-5" for="total" id="total-label">Total: $</label> 
+                        <div class="col-sm-1">
+                            <input class="form-control" type="number" id="total" name="total" readonly >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-5 col-sm-5"> 
+                    <input type="submit" value="Reserve Tickets" class="btn btn-primary">
+                </div> 
+                    </div>
+                </form>
+            </div>          
+        </div>
+        <br>
+        <form>
+            <input type="hidden" id="numberOfSeats" value="<%=session[0].seats[0].length%>">
+        </form>
+        <div class="navbar navbar-inverse ">
+            <div class="container">
+                <p class="navbar-text ">2021 © Copyright</p>
+            </div>
+        </div>
+    </div>  
+</body>
+
+<script>
+    $(document).ready(function(){
+
+        $(".square-free").click(function(){
+            var seat = $(this).text().trim();
+            var row = $(this).parent().attr('id').trim();
+            var rowNo = parseInt(row);
+            var clicked = $(this).hasClass('selected')
+            if (clicked){
+                $(this).css('background-color', 'white');
+                $(this).removeClass('selected');
+                var className = "."+seat+row;
+                $(className).remove();
+            } else{
+                $(this).css('background-color', 'blue');
+                $(this).addClass('selected');
+                var text = '<div class="form-group text-center '+seat+row+'"><label class="control-label col-sm-5 count-seats '+seat+row+'"for="rows">Row:</label><div class="col-sm-1 '+seat+row+'"> <input class="'+seat+row+' form-control" type="number" id="rows" name="rows" value="'+(rowNo +1) +'" readonly></div> <label class="'+seat+row+' control-label col-sm-1" for="seats">Seat:</label> <div class="col-sm-1 '+seat+row+'"><input class="'+seat+row+' form-control" type="number" id="seats" name="seats" value="'+seat+'" readonly></div></div>'
+                $("#total-label").before(text)
+            }
+            var seats_number = $(".count-seats").length;
+            var price = $('#price').val();
+            $('#total').val(seats_number*price);
+            
+        })
+
+        $(":submit").click(function(){
+            if($('#total').val() == 0){
+                alert('Please select at least one seat')
+                return false;
+            }
+            return true;
+        })
+
+        // left margin for screen
+        var n = $("#numberOfSeats").val();
+        var margin = ((40*n + 10*(n-1))-420)/2 + 50
+        var marginpx = margin + "px";
+        $(".screen").css("margin-left", marginpx);
+        // Left margin for span #margin
+        var pmargin = ((40*n + 10*(n-1))-298)/2 + 50
+        var pmarginpx = pmargin + "px";
+        $("#margin").css("margin-left", pmarginpx);      
+    })
+    
+</script>

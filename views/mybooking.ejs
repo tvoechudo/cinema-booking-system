@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+            .square-free {
+            height: 40px;
+            width: 40px;
+            background-color: white;
+            outline: 2px solid #000;
+            padding: 3px;
+            }
+     
+    
+            .square-booked {
+            height: 40px;
+            width: 40px;
+            background-color: grey;
+            outline: 2px solid #000;
+            padding: 3px;
+            }
+
+            .row-schema{
+                width: 40px;
+            }
+            .parent{
+                float:none;
+                width: auto;
+                margin: 10px auto;
+            }
+
+            .screen{
+                height: 25px;
+                width:  420px;
+                outline: 2px solid #000;
+            }
+
+            .parent>div {
+                float:left;
+                margin-right: 10px;
+            }
+
+            .clear {
+                clear: left; 
+            }
+
+            .hall{
+                width: auto;
+                padding: 2px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .schema{
+                display:none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/movies">CinemaProject</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li ><a href="/movies">Movies</a></li>
+                    <li><a href="/sessions">Showtimes</a></li>
+                    <li class="active"><a href="/mybooking"> My booking</a></li>
+                </ul>
+                </div>
+            </nav>
+
+            <div class="page-header">
+                <h1>My booking</h1>
+            </div>
+            <% var hours = booking[0].s_info[0].start_date.getHours()%>
+            <% var minutes = booking[0].s_info[0].start_date.getMinutes()%>
+            <% if (minutes < 10){%>
+                <% minutes = "0" + minutes%>
+            <% }%>
+            <%  var time%>
+            <%  if (hours < 12){%>
+                <% time = hours + ':' + minutes + ' AM'%>
+            <% } else {%>
+                <% time = (hours-12) + ':' + minutes + ' PM'%>
+            <% }%>
+            <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %>
+            <% var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %>
+            <div class="row">
+                <div class="col-sm-3 text-right">
+                    <table class="table-condensed">
+                        <tr>
+                            <td><b>Booking number:</b></td>
+                            <td class="text-left"><%= booking[0].bookingNumber %></td>
+                        </tr>
+                        <tr>
+                            <td><b>Email:</td>
+                            <td class="text-left"><%= booking[0].email %></td>
+                        </tr>
+                        <tr>
+                            <td ><b>Movie:</b></td>
+                            <td class="text-left"><%= booking[0].s_info[0].movie_name %></td>
+                        </tr>
+                        <tr>
+                            <td><b>Date:</b></td>
+                            <td class="text-left"><%= weekdays[booking[0].s_info[0].start_date.getDay()]+ " " + booking[0].s_info[0].start_date.getDate() + ' ' + months[booking[0].s_info[0].start_date.getMonth()] + ' ' + booking[0].s_info[0].start_date.getFullYear() %></td>
+                        </tr>
+                        <tr>
+                            <td><b>Time:</b></td>
+                            <td class="text-left"><%= time%></td>
+                        </tr>
+                        <tr>
+                            <td><b>Number of tickets:</b></td>
+                            <td class="text-left"><%= booking[0].rows.length %></td>
+                        </tr>
+                        <tr>
+                            <td><b>Seats:</b></td>
+                            <td class="text-left"><% for(var i = 0; i<booking[0].rows.length; i++){ %>
+                                row <%= booking[0].rows[i]%> seat  <%=booking[0].seats[i]%> <br>
+                                <% } %> </td>
+                        </tr>
+                        <tr>
+                            <td><b>Total cost:</b></td>
+                            <td class="text-left">$<%= booking[0].total %></td>
+                        </tr>
+                        <tr>
+                            <td> <button type="button" class="btn btn-primary" id="show">Change seats</button></td>
+                            <td class="text-left">
+                                <form action="/booking/delete?_method=DELETE" method="POST"> 
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="hidden" id="id" name="id" value="<%=booking[0].bookingNumber %>">
+                                <input type="hidden" id="sessionId" name="sessionId" value="<%=booking[0].sessionId %>">
+                                <input type="hidden" id="rows" name="rows" value="<%=booking[0].rows %>">
+                                <input type="hidden" id="seats" name="seats" value="<%=booking[0].seats %>">
+                                <input type="submit" class="btn btn-primary" value="Delete">
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                </div>  
+                <div class="col-sm-1 text-right"></div>
+                <div class="col-sm-8 schema">
+                        <p></p>  
+                        <div class="hall">
+                            <div class="screen"></div>
+                            <% var flag = 0; %>
+                            <% for(var i=0; i<booking[0].s_info[0].seats.length; i++){ %>
+                                <div class ="parent" id="<%=i%>">
+                                <div class="row-schema"><%= i+1 %> row</div>
+                                <% for(var j=0; j<booking[0].s_info[0].seats[i].length; j++){ %>
+                                    
+                                    <% for(var x=0; x<booking[0].rows.length; x++){ %>
+                                        <% if ((booking[0].rows[x] == (i+1)) && (booking[0].seats[x]==(j+1))) { %>
+                                            <div class="square-free selected" style="background-color: blue;"> <%=j+1%> </div>
+                                            <% flag = 1; %>
+                                        <% }%>
+                                    <% }%>
+                                    <% if (flag == 0){%>
+                                        <%  if (booking[0].s_info[0].seats[i][j]==0) {%> 
+                                        <div class="square-free"> <%=j+1%> </div> 
+                                        <% } else { %> 
+                                        <div class="square-booked"> <%=j+1%> </div> 
+                                        <% } %> 
+                                    <% } else{ %>
+                                        <% flag = 0 %>
+                                    <% } %>
+                                <% } %>
+                            </div><div class="clear"></div>
+                            <% } %>   
+                            </div> 
+                        <h5><span id="margin">Click on the available seats you'd like to reserve</span></h5>
+                    </div>                       
+                </div>
+                <br>
+                <div class="row schema">
+                    <form class="form-horizontal" action="/booking/edit?_method=PUT" method="POST">  
+                        <input type="hidden" name="_method" value="PUT">                            
+                        <input id="sessionId" name="sessionId" type="hidden" value="<%= booking[0].sessionId %>">
+                        <input id="bookingNumber" name="bookingNumber" type="hidden" value="<%= booking[0].bookingNumber %>">
+                        <input id="price" name ="price" type="hidden" value ="<%=booking[0].s_info[0].ticket_price %>">
+                        
+                        <% for (var i =0; i<booking[0].rows.length; i++){ %>
+                            <% var r = parseInt(booking[0].rows[i])-1 %>
+                            <% var s = booking[0].seats[i] %>
+                            <% var classSeat = s+r %>
+                            <input type="hidden" id="oldRows" name="oldRows" value="<%=booking[0].rows[i]%>">
+                            <input type="hidden" id="oldSeats" name="oldSeats" value="<%=booking[0].seats[i]%>">
+                            <div class="form-group text-center <%=classSeat%>">
+                                <label class="control-label col-sm-5 count-seats <%=classSeat%>" for="rows">Row:</label>
+                                <div class="col-sm-1 <%=classSeat%>"> 
+                                    <input class="<%=classSeat%> form-control" type="number" id="rows" name="rows" value="<%=booking[0].rows[i]%>" readonly="">
+                                </div> 
+                                <label class="<%=classSeat%> control-label col-sm-1" for="seats">Seat:</label> 
+                                <div class="col-sm-1 <%=classSeat%>"><input class="<%=classSeat%> form-control" type="number" id="seats" name="seats" value="<%=booking[0].seats[i]%>" readonly="">
+                                </div>
+                            </div>
+                            <%}%>
+                        <div class="form-group text-center">
+                            <label class="control-label col-sm-5" for="total" id="total-label">Total: $</label> 
+                            <div class="col-sm-1">
+                                <input class="form-control" type="number" id="total" name="total" value ="<%=booking[0].total%>" readonly >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-5 col-sm-5"> 
+                                <input type="submit" id="change" value="OK" class="btn btn-primary">
+                            </div> 
+                        </div>
+                    </form>
+                </div>
+                <br><br>
+                <form>
+                    <input type="hidden" id="numberOfSeats" value="<%=booking[0].s_info[0].seats[0].length%>">
+                </form>
+                <div id="footer" class="navbar navbar-inverse" style="position: fixed; bottom: 0;">
+                    <div class="container">
+                     <p class="navbar-text ">2021 © Copyright</p>
+                 </div>
+                </div>
+               
+        </div>
+    </body>
+
+    <script>
+    $(document).ready(function(){
+
+        $(".square-free").click(function(){
+            var seat = $(this).text().trim();
+            var row = $(this).parent().attr('id').trim();
+            var rowNo = parseInt(row);
+            var clicked = $(this).hasClass('selected')
+            if (clicked){
+                $(this).css('background-color', 'white');
+                $(this).removeClass('selected');
+                var className = "."+seat+row;
+                $(className).remove();
+            } else{
+                $(this).css('background-color', 'blue');
+                $(this).addClass('selected');
+                var text = '<div class="form-group text-center '+seat+row+'"><label class="control-label col-sm-5 count-seats '+seat+row+'"for="rows">Row:</label><div class="col-sm-1 '+seat+row+'"> <input class="'+seat+row+' form-control" type="number" id="rows" name="rows" value="'+(rowNo +1) +'" readonly></div> <label class="'+seat+row+' control-label col-sm-1" for="seats">Seat:</label> <div class="col-sm-1 '+seat+row+'"><input class="'+seat+row+' form-control" type="number" id="seats" name="seats" value="'+seat+'" readonly></div></div>'
+                $("#total-label").before(text)
+            }
+            var seats_number = $(".count-seats").length;
+            var price = $('#price').val();
+            $('#total').val(seats_number*price);
+            
+        })
+
+        $("#change").click(function(){
+            if($('#total').val() == 0){
+                alert('Please select at least one seat')
+                return false;
+            }
+            return true;
+        })
+
+        $("#show").click(function(){
+        $(".schema").toggle(); 
+        if ($(".schema").is(":visible")){
+            $("#footer").removeAttr("style");
+        }
+       
+        else {
+            $("#footer").css({"position": "fixed", "bottom": "0"});
+        }
+         });
+    
+    
+        console.log($(".schema").is(":visible"))
+        // left margin for screen
+        var n = $("#numberOfSeats").val();
+        var margin = ((40*n + 10*(n-1))-420)/2 + 50
+        var marginpx = margin + "px";
+        $(".screen").css("margin-left", marginpx);
+        // Left margin for span #margin
+        var pmargin = ((40*n + 10*(n-1))-298)/2 + 50
+        var pmarginpx = pmargin + "px";
+        $("#margin").css("margin-left", pmarginpx);   
+    })
+    </script>
+
+</html>

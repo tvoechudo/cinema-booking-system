@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    </head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <a class="navbar-brand" href="/movies">CinemaProject</a>
+              </div>
+              <ul class="nav navbar-nav">
+                <li ><a href="/movies">Movies</a></li>
+                <li><a href="/sessions">Showtimes</a></li>
+                <li ><a href="/mybooking"> My booking</a></li>
+              </ul>
+            </div>
+        </nav>
+        <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-11">
+                <h3>Thank you for the reservation!</h3><br>
+                <p>Your booking number is <b><%= newBooking.bookingNumber %></b></p>
+                <p>Email: <b><%= newBooking.email %></b> </p><br>
+                <p>To change or cancel the reservation, please use your email and booking number.</p>
+            </div>
+        </div>
+        <div class="navbar navbar-inverse" style="position: fixed; bottom: 0;">
+           <div class="container">
+               <p class="navbar-text ">2021 © Copyright</p>
+            </div>
+       </div>
+    </div>
+</body>
+</html>
+
+
+

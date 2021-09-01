@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+    <div class="container">
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                  <div class="navbar-header">
+                    <a class="navbar-brand" href="/movies">CinemaProject</a>
+                  </div>
+                  <ul class="nav navbar-nav">
+                    <li><a href="/movies">Movies</a></li>
+                    <li><a href="/sessions">Showtimes</a></li>
+                    <li class="active"><a href="/mybooking"> My booking</a></li>
+                  </ul>
+               
+                </div>
+            </nav>
+        <div class="page-header">
+            <h1>My booking  </h1>
+        </div>
+    <h4>Check your booking here</h4>
+        <div class="row">
+            <div class="col-sm-12">
+                <form class="form-horizontal" action="/booking/check" method="GET">                              
+                    <div class="form-group text-center">
+                        <label class="control-label col-sm-5" for="email">Email</label> 
+                        <div class="col-sm-3">
+                            <input class="form-control" type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                    
+
+                    <div class="form-group text-center">
+                        <label class="control-label col-sm-5" for="number" id="total-label">Booking Number:</label> 
+                        <div class="col-sm-3">
+                            <input class="form-control" type="text" id="number" name="number">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-5 col-sm-5"> 
+                    <input type="submit" value="Check" class="btn btn-primary">
+                </div> 
+                    </div>
+                </form>
+            </div>          
+            <div class="navbar navbar-inverse" style="position: fixed; bottom: 0;">
+                   <div class="container">
+                       <p class="navbar-text ">2021 © Copyright</p>
+                    </div>
+               </div>
+    </div>
+    </body>
+</html>
